@@ -18,7 +18,7 @@ function Sidebar({ isOpen, setIsOpen }: {
     <div>
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-50 bg-gray-200 p-2 rounded-md hover:bg-gray-300 transition"
+        className="fixed cursor-pointer top-4 left-4 z-50 bg-gray-200 p-2 rounded-md hover:bg-gray-300 transition"
       >
         {isOpen ? <PanelRightOpen size={20} /> : <PanelRightClose size={20} />}
       </button> 
@@ -48,10 +48,10 @@ function Sidebar({ isOpen, setIsOpen }: {
                 {isOpen && <span>O‘quvchilar</span>}
               </div>
             </Link>
-            <Link href="/teachers" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
+            <Link href="/instructors" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
               <div className={`flex items-center gap-2 text-gray-700 ${!isOpen && 'justify-center'}`}>
                 <Users size={isOpen ? 20 : 24} />
-                {isOpen && <span>O‘qituvchilar</span>}
+                {isOpen && <span>O`qituvchilar</span>}
               </div>
             </Link>
             <Link href="/settings" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
