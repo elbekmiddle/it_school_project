@@ -1,11 +1,109 @@
-import React from 'react'
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import React from "react";
 
-function page() {
+const data = [
+  {
+    name: "Emily Carter",
+    role: "Teacher",
+    course: "Introduction to Programming",
+    date: "2024-07-26",
+  },
+  {
+    name: "David Lee",
+    role: "Teacher",
+    course: "Data Science Fundamentals",
+    date: "2024-07-25",
+  },
+  {
+    name: "Sarah Jones",
+    role: "Teacher",
+    course: "Web Development Basics",
+    date: "2024-07-24",
+  },
+  {
+    name: "Programming Fundamentals",
+    role: "Course",
+    course: "Emily Carter",
+    date: "2024-07-26",
+  },
+  {
+    name: "Advanced Data Analysis",
+    role: "Course",
+    course: "David Lee",
+    date: "2024-07-25",
+  },
+];
+
+function Page() {
   return (
-    <div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit officiis modi alias aut explicabo ut ducimus, obcaecati nemo possimus deserunt tempore mollitia vel accusantium dolores delectus id doloribus consectetur ratione, dolorem commodi tenetur? Aspernatur nisi natus provident laudantium, consequatur eaque. Illum ipsum sunt, aliquid maiores minima sit ipsa, sapiente, perferendis vero magnam quam facilis? Commodi consequatur a perferendis esse voluptatem saepe nihil beatae eius incidunt odit! Quam ducimus ratione non beatae a alias, excepturi soluta libero, nesciunt dolor vel sunt consequuntur necessitatibus possimus nulla perspiciatis. Nulla perspiciatis nisi molestiae quae eligendi ipsum officia modi, quod tempore recusandae similique veritatis quos, esse facilis quam maxime placeat, nihil voluptatem. Molestiae numquam iste tenetur cum corporis voluptates natus facere provident! Nam fugit voluptates, incidunt dignissimos maiores, natus, quidem consectetur ad unde recusandae optio. Inventore est alias rem porro, harum, autem animi voluptas fuga deserunt iste quasi aliquam voluptatem ipsum aliquid. Culpa aliquid, dolor suscipit voluptatum voluptates nihil reiciendis consequuntur velit voluptatem deserunt est doloribus sit debitis, animi distinctio natus numquam repudiandae. Molestias dolor fugiat sint, velit inventore illo dolorem a ex impedit neque in iusto placeat tempora labore delectus eligendi animi ipsum atque tenetur consectetur iure! Assumenda perferendis, aliquam modi cupiditate in nesciunt?
+    <div className="bg-gray-100 min-h-screen p-4 md:p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <Button className="flex items-center gap-2 cursor-pointer bg-blue-500 hover:bg-blue-600 w-full md:w-auto justify-center">
+          <Download className="w-4 h-4" />
+          Export
+        </Button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+          <p className="text-gray-500 font-semibold text-sm md:text-base">Umumiy kurslar soni</p>
+          <p className="text-xl md:text-2xl font-bold mt-2">120</p>
+        </div>
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+          <p className="text-gray-500 font-semibold text-sm md:text-base">Umumiy o`qituvchilar soni</p>
+          <p className="text-xl md:text-2xl font-bold mt-2">35</p>
+        </div>
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+          <p className="text-gray-500 font-semibold text-sm md:text-base">Umumiy o`quvchilar soni</p>
+          <p className="text-xl md:text-2xl font-bold mt-2">500</p>
+        </div>
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+          <p className="text-gray-500 font-semibold text-sm md:text-base">Oylik tushum</p>
+          <p className="text-xl md:text-2xl font-bold mt-2 text-green-600">$15,000</p>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+        <Table className="min-w-[600px]">
+          <TableCaption className="text-left mb-4 font-semibold">
+            So`nggi qo`shilgan o`qituvchilar va kurslar
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[200px]">Nomi</TableHead>
+              <TableHead>Roli</TableHead>
+              <TableHead>Kurs</TableHead>
+              <TableHead>Qo`shilgan sana</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell>{item.role}</TableCell>
+                <TableCell>{item.course}</TableCell>
+                <TableCell>{item.date}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
-  )
+  );
 }
 
-export default page
+export default Page;

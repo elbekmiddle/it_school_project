@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function ClientLayout({
   children,
@@ -13,7 +13,7 @@ export default function ClientLayout({
   const pathname = usePathname();
   const hideLayout = pathname === "/login";
 
-  // Sidebar state
+  // Sidebar state bu yerda turadi
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -21,16 +21,14 @@ export default function ClientLayout({
       {!hideLayout && (
         <>
           <Navbar />
-          {/* Sidebar ga isOpen va setIsOpen beramiz */}
           <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
         </>
       )}
 
-      {/* Content qismi sidebar state ga qarab joylashadi */}
       <main
-        className={`transition-all duration-300 pt-16 ${
-          hideLayout ? "" : isOpen ? "pl-64" : "pl-16"
-        }`}
+        className={`transition-all duration-300 pt-16 
+          ${!hideLayout ? (isOpen ? "pl-[260px]" : "pl-[68px]") : ""} 
+          pr-4 pb-4`}
       >
         {children}
       </main>
