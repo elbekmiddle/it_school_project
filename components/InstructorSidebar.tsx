@@ -36,7 +36,7 @@ function Sidebar({ isOpen, setIsOpen }: {
                 {isOpen && <span>Asosiy</span>}
               </div>
             </Link>
-            <Link href="/students" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
+            <Link href="/instructor/students" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
               <div className={`flex items-center gap-2 text-gray-700 ${!isOpen && 'justify-center'}`}>
                 <GraduationCap size={isOpen ? 20 : 24} />
                 {isOpen && <span>O‘quvchilar</span>}
