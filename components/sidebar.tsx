@@ -1,4 +1,4 @@
-import { BookOpen, GraduationCap, House, Settings, Users, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { BookOpen, GraduationCap, House, Settings, Users, PanelRightOpen, PanelRightClose, ChartNoAxesCombined } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -56,8 +56,8 @@ function Sidebar({ isOpen, setIsOpen }: {
             </Link>
             <Link href="/settings" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
               <div className={`flex items-center gap-2 text-gray-700 ${!isOpen && 'justify-center'}`}>
-                <Settings size={isOpen ? 20 : 24} />
-                {isOpen && <span>Sozlamalar</span>}
+                <ChartNoAxesCombined size={isOpen ? 20 : 24} />
+                {isOpen && <span>Xisobot</span>}
               </div>
             </Link>
           </div>
