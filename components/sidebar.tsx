@@ -54,7 +54,7 @@ function Sidebar({ isOpen, setIsOpen }: {
                 {isOpen && <span>O`qituvchilar</span>}
               </div>
             </Link>
-            <Link href="/settings" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
+            <Link href="/reports" className="cursor-pointer hover:bg-gray-200 p-2 rounded transition">
               <div className={`flex items-center gap-2 text-gray-700 ${!isOpen && 'justify-center'}`}>
                 <ChartNoAxesCombined size={isOpen ? 20 : 24} />
                 {isOpen && <span>Xisobot</span>}
