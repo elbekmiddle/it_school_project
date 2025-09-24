@@ -1,64 +1,156 @@
-import React from 'react';
-import { Bell, User } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
-function Navbar() {
+import React, { useState, useEffect, useRef } from "react";
+import { Bell, User, Menu } from "lucide-react";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+export default function Navbar() {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const notifRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Click outside listener
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotifOpen(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleNotif = () => setNotifOpen(!notifOpen);
+  const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
+  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/login");
+  };
+
   return (
-    <div className='fixed top-0 left-0 w-full h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm z-10'>
-      <div>
-        
-      </div>
-      <div className="flex items-center">
-        <Link href={'/'} className='cursor-pointer flex items-center'>
-          <p className='font-bold'>It School</p>
+    <nav className="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-50">
+      <div className="flex items-center justify-between h-16 px-4 md:px-8">
+        <div>
+          
+        </div>
+        {/* Left: Logo */}
+        <Link href="/" className="font-bold text-lg md:text-xl">
+          IT School
         </Link>
+
+        {/* Mobile Menu Button */}
+        {isMobile && (
+          <Menu
+            className="cursor-pointer md:hidden"
+            onClick={toggleMobileMenu}
+          />
+        )}
+
+        {/* Desktop / Tablet */}
+        <div className={`flex items-center gap-6 ${isMobile ? "hidden" : ""}`}>
+          {/* Notifications */}
+          <div className="relative" ref={notifRef}>
+            <Bell className="cursor-pointer" onClick={toggleNotif} />
+            {notifOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 shadow-md rounded-md z-20">
+                <p className="p-2 text-sm border-b border-gray-100">Yangi bildirishnoma 1</p>
+                <p className="p-2 text-sm border-b border-gray-100">Yangi bildirishnoma 2</p>
+                <p className="p-2 text-sm">Yangi bildirishnoma 3</p>
+              </div>
+            )}
+          </div>
+
+          {/* User Menu */}
+          <div className="relative" ref={userMenuRef}>
+            <div
+              className="flex items-center cursor-pointer gap-2"
+              onClick={toggleUserMenu}
+            >
+              <User />
+              {session?.user?.name && <span className="hidden md:inline">{session.user.name}</span>}
+            </div>
+            {userMenuOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md z-20">
+                <Link
+                  href="/profile"
+                  className="block p-2 text-sm hover:bg-gray-100"
+                >
+                  Profile
+                </Link>
+                <button
+                  className="w-full text-left p-2 text-sm hover:bg-gray-100"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-      <div className="flex gap-8 items-center">
-        <Bell className='cursor-pointer' />
-        <User className='cursor-pointer' />
-      </div>
-      <style jsx>{`
-        @media (max-width: 640px) {
-          .navbar {
-            flex-direction: column;
-            height: auto;
-            padding: 1rem;
-          }
-          .navbar div:first-child {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 0.5rem;
-          }
-          .navbar .flex {
-            gap: 4;
-            justify-content: center;
-          }
-          .navbar .flex.items-center button {
-            display: none; /* Hide toggle on mobile if not needed */
-          }
-          .navbar .flex.items-center p {
-            margin: 0 auto;
-          }
-        }
-        @media (min-width: 641px) and (max-width: 768px) { /* sm breakpoint */
-          .navbar .flex.items-center {
-            justify-content: center;
-          }
-          .navbar .flex.items-center p {
-            margin-left: 0;
-          }
-        }
-        @media (min-width: 769px) { /* md and up */
-          .navbar .flex.items-center {
-            justify-content: flex-start;
-          }
-          .navbar .flex.items-center p {
-            margin-left: 0;
-          }
-        }
-      `}</style>
-    </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && isMobile && (
+        <div className="px-4 pb-4 md:hidden flex flex-col gap-2 bg-white border-t border-gray-200">
+          <div className="relative" ref={notifRef}>
+            <Bell className="cursor-pointer" onClick={toggleNotif} />
+            {notifOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 shadow-md rounded-md z-20">
+                <p className="p-2 text-sm border-b border-gray-100">Yangi bildirishnoma 1</p>
+                <p className="p-2 text-sm border-b border-gray-100">Yangi bildirishnoma 2</p>
+                <p className="p-2 text-sm">Yangi bildirishnoma 3</p>
+              </div>
+            )}
+          </div>
+
+          <div className="relative" ref={userMenuRef}>
+            <div
+              className="flex items-center cursor-pointer gap-2"
+              onClick={toggleUserMenu}
+            >
+              <User />
+              {session?.user?.name && <span>{session.user.name}</span>}
+            </div>
+            {userMenuOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md z-20">
+                <Link
+                  href="/profile"
+                  className="block p-2 text-sm hover:bg-gray-100"
+                >
+                  Profile
+                </Link>
+                <button
+                  className="w-full text-left p-2 text-sm hover:bg-gray-100"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 }
-
-export default Navbar;

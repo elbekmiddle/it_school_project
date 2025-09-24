@@ -1,12 +1,17 @@
-import InstructorLayout from '@/components/InstructorLayout';
-import { ReactNode } from 'react';
+"use client";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+import { ReactNode } from "react";
+import InstructorLayout from "@/components/InstructorLayout";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
+
+export default function InstructorRootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-gray-100" suppressHydrationWarning>
-        <InstructorLayout>{children}</InstructorLayout>
-      </body>
-    </html>
+    <SessionProvider>
+      <InstructorLayout>
+        {children}
+        <Toaster position="top-right" richColors closeButton />
+      </InstructorLayout>
+    </SessionProvider>
   );
 }

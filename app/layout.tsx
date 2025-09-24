@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner"; // 🔥 Sonner import qilindi
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +17,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} min-h-screen bg-gray-100`}>
         <div>{children}</div>
+
+        {/* 🔔 Sonner Toaster */}
+        <Toaster
+          position="top-right"
+          richColors // rang-barang animatsiyali toastlar
+          closeButton // yopish tugmasi
+          toastOptions={{
+            duration: 4000, // toastning davomiyligi 4 soniya
+          }}
+        />
       </body>
     </html>
   );

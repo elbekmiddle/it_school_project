@@ -1,12 +1,17 @@
-import ClientLayout from '@/components/ClientLayout';
-import { ReactNode } from 'react';
+"use client";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+import { ReactNode } from "react";
+import ClientLayout from "@/components/ClientLayout";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
+
+export default function AdminRootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className={" min-h-screen bg-gray-100"}>
-        <ClientLayout>{children}</ClientLayout>
-      </body>
-    </html>
+    <SessionProvider>
+      <ClientLayout>
+        {children}
+        <Toaster position="top-right" richColors closeButton />
+      </ClientLayout>
+    </SessionProvider>
   );
 }
