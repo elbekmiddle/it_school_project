@@ -1,84 +1,102 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import Student, { IStudent } from "@/models/Student";
-import Course, { ICourse } from "@/models/Course";
+import Student from "@/models/Student";
+import Course from "@/models/Course";
 
-// 🔹 GET: barcha studentlar kurs ma’lumotlari bilan
+// GET all students
 export async function GET() {
-  await dbConnect();
-
-  const students = await Student.find()
-    .populate<{ course: ICourse | null }>("course", "title price duration status")
-    .lean();
-
-  const typedStudents = students as unknown as (IStudent & { course?: ICourse | null })[];
-
-  const formatted = typedStudents.map((s) => ({
-    _id: s._id?.toString(),
-    name: s.name,
-    phone: s.phone,
-    course: s.course ? s.course.title : "Noma’lum kurs",
-    startDate: s.startDate.toISOString(),
-    paymentStatus: s.paymentStatus,
-    price: s.course?.price || 0,
-    duration: s.course?.duration || 0,
-    courseStatus: s.course?.status || "inactive",
-  }));
-
-  return NextResponse.json(formatted);
+  try {
+    await dbConnect();
+    const students = await Student.find().populate("course");
+    return NextResponse.json({ success: true, data: students });
+  } catch (error) {
+    console.error("GET students error:", error);
+    return NextResponse.json({ success: false, message: "Server xatosi" }, { status: 500 });
+  }
 }
 
-// 🔹 POST: yangi student qo‘shish
+// POST new student
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const body: Omit<IStudent, "_id"> = await req.json();
+    const body = await req.json();
 
-    const course = await Course.findById(body.course);
-    if (!course) return NextResponse.json({ error: "Kurs topilmadi" }, { status: 400 });
+    const courseExists = await Course.findById(body.course);
+    if (!courseExists) {
+      return NextResponse.json({ success: false, message: "Kurs topilmadi" }, { status: 400 });
+    }
 
-    const student = await Student.create(body);
-    return NextResponse.json(student, { status: 201 });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Server xatosi";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const newStudent = await Student.create({
+      name: body.name,
+      phone: body.phone,
+      course: body.course,
+      startDate: body.startDate,
+      paymentStatus: "unpaid",
+    });
+
+    return NextResponse.json({ success: true, data: newStudent }, { status: 201 });
+  } catch (error) {
+    console.error("POST student error:", error);
+    return NextResponse.json({ success: false, message: "Server xatosi" }, { status: 500 });
   }
 }
 
-// 🔹 PUT: studentni yangilash
+// PUT update student
 export async function PUT(req: Request) {
   try {
     await dbConnect();
-    const body: Partial<IStudent> & { _id?: string } = await req.json();
+    const { id, ...rest } = await req.json();
 
-    if (!body._id) return NextResponse.json({ error: "ID kerak" }, { status: 400 });
-
-    if (body.course) {
-      const course = await Course.findById(body.course);
-      if (!course) return NextResponse.json({ error: "Kurs topilmadi" }, { status: 400 });
+    const updated = await Student.findByIdAndUpdate(id, rest, { new: true }).populate("course", "title");
+    if (!updated) {
+      return NextResponse.json({ success: false, message: "Student topilmadi" }, { status: 404 });
     }
 
-    const updated = await Student.findByIdAndUpdate(body._id, body, { new: true });
-    return NextResponse.json(updated);
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Server xatosi";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("PUT student error:", error);
+    return NextResponse.json({ success: false, message: "Server xatosi" }, { status: 500 });
   }
 }
 
-// 🔹 DELETE: studentni o‘chirish
+// DELETE student
 export async function DELETE(req: Request) {
   try {
     await dbConnect();
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const { id } = await req.json();
 
-    if (!id) return NextResponse.json({ error: "ID kerak" }, { status: 400 });
+    const deleted = await Student.findByIdAndDelete(id);
+    if (!deleted) {
+      return NextResponse.json({ success: false, message: "Student topilmadi" }, { status: 404 });
+    }
 
-    await Student.findByIdAndDelete(id);
-    return NextResponse.json({ success: true });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Server xatosi";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ success: true, message: "O‘chirildi" });
+  } catch (error) {
+    console.error("DELETE student error:", error);
+    return NextResponse.json({ success: false, message: "Server xatosi" }, { status: 500 });
+  }
+}
+
+// PATCH pay student
+export async function PATCH(req: Request) {
+  try {
+    await dbConnect();
+    const { id, amount, month } = await req.json();
+
+    const student = await Student.findById(id);
+    if (!student) {
+      return NextResponse.json({ success: false, message: "Student topilmadi" }, { status: 404 });
+    }
+
+    student.paymentStatus = "paid";
+    student.lastPaymentDate = new Date();
+    student.paymentAmount = amount;
+
+    await student.save();
+
+    return NextResponse.json({ success: true, data: student });
+  } catch (error) {
+    console.error("PATCH student error:", error);
+    return NextResponse.json({ success: false, message: "Server xatosi" }, { status: 500 });
   }
 }

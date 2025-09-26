@@ -1,26 +1,22 @@
-import { Schema, model, models, Types } from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 
-export interface IStudent {
-  _id?: string;
-  name: string;
-  phone: string;
-  course: Types.ObjectId; // ObjectId bilan mos
-  startDate: Date;
-  paymentStatus: "paid" | "unpaid" | "overdue";
-  lastPaymentDate?: Date;
-  createdAt?: Date;
-}
-
-const studentSchema = new Schema<IStudent>(
+const StudentSchema = new Schema(
   {
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    course: { type: Schema.Types.ObjectId, ref: "Course", required: true },
+    course: { type: Schema.Types.ObjectId, ref: "Course" },
     startDate: { type: Date, required: true },
-    paymentStatus: { type: String, enum: ["paid", "unpaid", "overdue"], default: "unpaid" },
+
+    paymentStatus: {
+      type: String,
+      enum: ["paid", "unpaid", "overdue"],
+      default: "unpaid",
+    },
     lastPaymentDate: { type: Date },
+    paymentAmount: { type: Number },
   },
   { timestamps: true }
 );
 
-export default models.Student || model<IStudent>("Student", studentSchema);
+const Student = models.Student || model("Student", StudentSchema);
+export default Student;

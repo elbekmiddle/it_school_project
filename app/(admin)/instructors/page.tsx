@@ -32,7 +32,7 @@ export default function InstructorsPage() {
     email: "",
     phone: "",
     password: "",
-    role: "instructor",
+    role: "instructor", // 🔹 avtomatik instructor
   });
 
   // Fetch all
@@ -69,7 +69,7 @@ export default function InstructorsPage() {
       email: inst.email,
       phone: inst.phone ?? "",
       password: "",
-      role: inst.role,
+      role: "instructor", // 🔹 tahrirda ham instructor bo‘lib qoladi
     });
     setModalOpen(true);
   };
@@ -222,19 +222,6 @@ export default function InstructorsPage() {
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 className="border rounded-lg p-4 w-full focus:ring-2 focus:ring-blue-500"
               />
-              <select
-                value={form.role}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    role: e.target.value as "admin" | "instructor",
-                  })
-                }
-                className="border rounded-lg p-4 w-full focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="instructor">Instructor</option>
-                <option value="admin">Admin</option>
-              </select>
               <input
                 type="password"
                 placeholder={

@@ -7,7 +7,8 @@ interface IErrorResponse {
   error: string;
 }
 
-// 🔹 Instructorlar ro‘yxati
+// ================== GET ==================
+// 🔹 Instructorlar ro‘yxatini olish
 export async function GET(): Promise<NextResponse<IUser[] | IErrorResponse>> {
   try {
     await dbConnect();
@@ -15,12 +16,13 @@ export async function GET(): Promise<NextResponse<IUser[] | IErrorResponse>> {
       .sort({ createdAt: -1 })
       .lean<IUser[]>();
     return NextResponse.json(instructors);
-  } catch {
+  } catch (err) {
     return NextResponse.json({ error: "O‘qituvchilarni olishda xato" }, { status: 500 });
   }
 }
 
-// 🔹 Yangi instructor qo‘shish
+// ================== POST ==================
+// 🔹 Yangi instructor yaratish
 export async function POST(req: NextRequest): Promise<NextResponse<IUser | IErrorResponse>> {
   try {
     await dbConnect();
@@ -52,11 +54,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<IUser | IErro
     });
 
     return NextResponse.json(newUser);
-  } catch {
+  } catch (err) {
     return NextResponse.json({ error: "O‘qituvchi yaratishda xato" }, { status: 500 });
   }
 }
 
+// ================== PUT ==================
 // 🔹 Instructorni yangilash
 export async function PUT(req: NextRequest): Promise<NextResponse<IUser | IErrorResponse>> {
   try {
@@ -74,8 +77,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<IUser | IError
       return NextResponse.json({ error: "ID kiritilmadi" }, { status: 400 });
     }
 
-    // 🔹 TypeScriptga xato bermasligi uchun `Pick<IUser, ...>` ishlatyapmiz
-    const updateData: Pick<IUser, "name" | "email" | "phone" | "role"> & Partial<IUser> = {
+    const updateData: Partial<IUser> = {
       name,
       email,
       phone,
@@ -86,18 +88,21 @@ export async function PUT(req: NextRequest): Promise<NextResponse<IUser | IError
       updateData.password = await bcrypt.hash(password, 10);
     }
 
-    const updated = await User.findByIdAndUpdate(_id, updateData, { new: true }).lean<IUser | null>();
+    const updated = await User.findByIdAndUpdate(_id, updateData, {
+      new: true,
+    }).lean<IUser | null>();
 
     if (!updated) {
       return NextResponse.json({ error: "O‘qituvchi topilmadi" }, { status: 404 });
     }
 
     return NextResponse.json(updated);
-  } catch {
+  } catch (err) {
     return NextResponse.json({ error: "O‘qituvchini yangilashda xato" }, { status: 500 });
   }
 }
 
+// ================== DELETE ==================
 // 🔹 Instructorni o‘chirish
 export async function DELETE(req: NextRequest): Promise<NextResponse<IErrorResponse>> {
   try {
@@ -110,12 +115,13 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<IErrorRespo
     }
 
     const deleted = await User.findByIdAndDelete(id);
+
     if (!deleted) {
       return NextResponse.json({ error: "O‘qituvchi topilmadi" }, { status: 404 });
     }
 
     return NextResponse.json({ error: "O‘qituvchi o‘chirildi" });
-  } catch {
+  } catch (err) {
     return NextResponse.json({ error: "O‘qituvchini o‘chirishda xato" }, { status: 500 });
   }
 }
